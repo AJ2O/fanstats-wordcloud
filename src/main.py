@@ -1,70 +1,64 @@
-# argparse
-import argparse
-parser = argparse.ArgumentParser(
-    description='Loads social media posts on sports teams and uploads them to' 
-    + ' AWS for further processing via Glue & Athena.')
-parser.add_argument(
-    '-r',
-    '--twitter_results_per_page', 
-    metavar='N', 
-    type=int, 
-    default=100,
-    help='The number of Twitter results to retrieve per page request')
-parser.add_argument(
-    '-m',
-    '--twitter_max_results', 
-    metavar='N',
-    type=int, 
-    default=3000,
-    help='The maximum number of Twitter results to retrieve')
-args = parser.parse_args()
+# Import basic libraries
+import os
+import re
+import yaml
 
-# constants / environment variables
+# Import statistics and machine learning libraries
+import numpy as np
+import pandas as pd
+from nltk.stem.wordnet import WordNetLemmatizer
+from scipy.ndimage import gaussian_gradient_magnitude
+# The following NLTK resource only needs to be downloaded once. If it is
+# already installed, the following two lines can be commented out.
+import nltk
+nltk.download('wordnet')
+
+# Import visualization libraries
+import matplotlib.pyplot as plt
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+
+# Import time-related libraries
+import datetime
+from time import gmtime, sleep, strftime
+
+# Import AWS SDK and configure service clients
+import boto3
+athena_client = boto3.client('athena')
+
+# Define constants and environment variables
 ATHENA_CATALOG = ''
 ATHENA_DB = ''
 ATHENA_QUERY_RESULTS = ''
 ATHENA_WORKGROUP = ''
 LOCAL_OUTPUT_PATH = 'complete_wordclouds'
 
-# import libraries
-import os
-import yaml
 
-# math libraries
-import numpy as np
-import pandas as pd
-from scipy.ndimage import gaussian_gradient_magnitude
-
-# visualization libraries
-import matplotlib.pyplot as plt
-from PIL import Image
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-
-# time libraries
-import datetime
-from time import gmtime, sleep, strftime
-
-# AWS clients
-import boto3
-athena_client = boto3.client('athena')
-
-# file helpers
+# Configuration helpers
 def load_environment_variables():
+    '''
+    Loads variables into the running environment, either from the host 
+    environment or a local file. 
+    '''
     if not os.environ.get('ENVIRONMENT_SETUP'):
         # TODO: download config file
         with open('config.yaml') as file:
             config = yaml.safe_load(file)
             os.environ.update(config)
 
-def load_query_configuration(query_file):
-    with open(query_file) as file:
+def load_query_configuration(queryfile):
+    '''
+    Returns the configurations for the given queryfile.
+    '''
+    with open(queryfile) as file:
         documents = list(yaml.safe_load_all(file))
         version = documents[0]
         universal_settings = documents[1]
         query_documents = documents[2:]
         return version, universal_settings, query_documents
 
-# Athena helpers
+
+# AWS helpers
 def run_athena_query(query_string):
     '''
     Executes an Athena query using the given string, and returns a pandas
@@ -103,6 +97,7 @@ def run_athena_query(query_string):
                 +  " seconds")
 
         sleep(time_interval)
+    print("Query " + query_execution_id + " complete!")
 
     # accumulate results
     query_results = []
@@ -125,8 +120,87 @@ def run_athena_query(query_string):
     df = pd.DataFrame(clean_result[1:], columns=clean_result[0])
     return df
 
-# WordCloud main
-def generate_wordcloud(text_list, mask_image_path=None, stopwords={}):
+
+# WordCloud helpers
+def load_template_mask(mask_settings):
+    '''
+    Returns a file path to an image mask.
+    '''
+    mask_path = ''
+    if mask_settings['type'] == 'local':
+        return mask_settings['location']
+    else:
+        raise('Masks from ' + mask_settings['type'] + ' are unsupported')
+
+def load_template_stopwords(stopwords_settings):
+    '''
+    Returns a set of stopwords based on the given settings.
+    '''
+    stopwords = set()
+    for setting in stopwords_settings:
+        setting_type = setting['type']
+        if setting_type == 'local':
+            words = [line.strip() for line in open(setting['location'])]
+            stopwords.update(words)
+        else:
+            raise NotImplementedError("Stopwords of type " 
+                + setting_type 
+                + " are unsupported")
+    return stopwords
+
+def load_template_wordcloud_config(document, universal_wc_config):
+    '''
+    Returns the WordCloud configurations for a given document.
+    '''
+    wc_max_words = int(universal_wc_config['max_words'])
+    wc_random_state = int(universal_wc_config['random_state'])
+
+    if 'wordcloud' in document:
+        wc_config = document['wordcloud']
+        if 'max_words' in wc_config:
+            wc_max_words = int(wc_config['max_words'])
+        if 'random_state' in wc_config:
+            wc_random_state = int(wc_config['random_state'])
+
+    return wc_max_words, wc_random_state
+
+def normalize_text(text_list, stopwords={}):
+    '''
+    Pre-process and normalize raw text for cleanliness.
+    '''
+    normalized_text_list = []
+    for original_text in text_list:
+        # remove punctuation
+        text = re.sub('[^a-zA-Z0-9]', ' ', original_text)
+
+        # convert to lowercase
+        text = text.lower()
+
+        # remove tags
+        text=re.sub("&lt;/?.*?&gt;"," &lt;&gt; ",text)
+
+        # lemmatize text
+        text = text.split()
+        wnl = WordNetLemmatizer()
+        text = [wnl.lemmatize(word) for word in text if not word in stopwords]
+
+        # add normalized text
+        text = " ".join(text)
+        normalized_text_list.append(text)
+        
+    return normalized_text_list
+
+
+# WordCloud
+def generate_wordcloud(
+    text_list, 
+    mask_image_path=None,
+    max_words=3000,
+    random_state=5):
+    '''
+    Generates a WordCloud for the given text, and using any specified
+    custom settings.
+    '''
     # configure image masking
     mask = None
     if mask_image_path:
@@ -141,15 +215,14 @@ def generate_wordcloud(text_list, mask_image_path=None, stopwords={}):
             axis=0)
         transformed_mask[edges > .08] = 255
 
-    # generate a word cloud image
-    aggregated_text = ". ".join(text_list)
+    # generate a WordCloud
+    aggregated_text = " ".join(text_list)
     wordcloud = WordCloud(
-        max_words=3000,
+        max_words=max_words,
         mask=transformed_mask,
-        random_state=5,
-        stopwords=stopwords).generate(aggregated_text)
+        random_state=random_state).generate(aggregated_text)
     
-    # recolor the wordcloud based on the original image's colors
+    # recolor the WordCloud based on the original image's colors
     if mask_image_path:
         image_colors = ImageColorGenerator(image_mask)
         wordcloud.recolor(color_func=image_colors)
@@ -175,39 +248,51 @@ def generate_wordcloud(text_list, mask_image_path=None, stopwords={}):
     '''
     return wordcloud
 
-# WordCloud helpers
-def configure_mask(mask_settings):
-    mask_path = ''
-    if mask_settings['type'] == 'local':
-        return mask_settings['location']
-    else:
-        raise('Masks from ' + mask_settings['type'] + ' are unsupported')
-
 def generate_document_wordcloud(
     document,
     text_list=[],
     universal_query_settings={}
     ):
+    '''
+    Generates a WordCloud for a given document and accompanying text.
+    '''
     # mask
     mask_image_path = None
     if 'mask' in document:
-        mask_image_path = configure_mask(document['mask'])
+        mask_image_path = load_template_mask(document['mask'])
     elif 'mask' in universal_query_settings:
-        mask_image_path = configure_mask(universal_query_settings['mask'])
+        mask_image_path = load_template_mask(universal_query_settings['mask'])
 
     # stop words
     stopwords = set(STOPWORDS)
-    if 'ignore' in universal_query_settings:
-        stopwords.update(universal_query_settings['ignore'])
-    if 'ignore' in document:
-        stopwords.update(document['ignore'])
+    if 'stopwords' in universal_query_settings:
+        stopwords.update(load_template_stopwords(
+            universal_query_settings['stopwords']
+        ))
+    if 'stopwords' in document:
+        stopwords.update(load_template_stopwords(
+            document['stopwords']
+        ))
+
+    # WordCloud configuration
+    wc_max_words, wc_random_state = load_template_wordcloud_config(
+        document=document,
+        universal_wc_config=universal_query_settings['wordcloud']
+    )
+
+    # format text
+    formatted_text = normalize_text(text_list, stopwords)
 
     return generate_wordcloud(
-        text_list,
-        mask_image_path, 
-        stopwords)
+        formatted_text,
+        mask_image_path=mask_image_path,
+        max_words=wc_max_words,
+        random_state=wc_random_state)
 
 def export_wordcloud(wordcloud, output_file_path):
+    '''
+    Exports a wordcloud to the given file path.
+    '''
     # create output path
     if not os.path.exists('complete_wordclouds'):
         os.mkdir('complete_wordclouds')
@@ -218,10 +303,12 @@ def export_wordcloud(wordcloud, output_file_path):
 
     # TODO: upload to S3
 
-# main
+
+# Main
 def run_query_document_v1_0(
     document,
-    universal_query_settings={}
+    universal_query_settings={},
+    source_df=None
     ):
     query_type = document['type']
     
@@ -229,11 +316,14 @@ def run_query_document_v1_0(
     if query_type == 'League':
         league = document['name']
 
-        # run Athena query
-        query_string = '''
-        SELECT * FROM posts_by_league WHERE league = '{}'
-        '''.format(league)
-        df = run_athena_query(query_string)
+        if source_df is None:
+            # run Athena query
+            query_string = '''
+            SELECT * FROM posts_by_league WHERE league = '{}'
+            '''.format(league)
+            df = run_athena_query(query_string)
+        else:
+            df = source_df.loc[source_df.league == league]
 
         if not df.empty:
             # generate WordCloud
@@ -250,11 +340,14 @@ def run_query_document_v1_0(
     elif query_type == 'Team':
         team = document['name']
 
-        # run Athena query
-        query_string = '''
-        SELECT * from posts_by_team WHERE team = '{}'
-        '''.format(team)
-        df = run_athena_query(query_string)
+        if source_df is None:
+            # run Athena query
+            query_string = '''
+            SELECT * from posts_by_team WHERE team = '{}'
+            '''.format(team)
+            df = run_athena_query(query_string)
+        else:
+            df = source_df.loc[source_df.team == team]
 
         if not df.empty:
             # generate WordCloud
@@ -275,10 +368,12 @@ def run_query_document_v1_0(
 def run_query_document(
     document,
     universal_query_settings={},
-    queryfile_version=1.0
+    queryfile_version=1.0,
+    source_df=None
     ):
     if queryfile_version == 1.0:
-        run_query_document_v1_0(document, universal_query_settings)
+        print("Loading document " + document['name'] + "...")
+        run_query_document_v1_0(document, universal_query_settings, source_df)
     else:
         raise NotImplementedError("Queryfile version "
             + queryfile_version 
@@ -302,12 +397,20 @@ def main():
     print("Queryfile Version: " + str(queryfile_version['version']))
     print("Universal query settings: " + str(universal_query_settings))
 
+    # if the mode is 'ALL', run the query once, generate the dataframe,
+    # and use it as the basis of truth for analyzing each document
+    general_settings = universal_query_settings['general']
+    source_df = None
+    if general_settings['mode'] == 'ALL':
+        source_df = run_athena_query(general_settings['query'])
+
     # query all documents
-    for document in query_documents:
+    for document in query_documents:   
         run_query_document(
             document, 
             universal_query_settings=universal_query_settings, 
-            queryfile_version=queryfile_version['version'])
+            queryfile_version=queryfile_version['version'],
+            source_df=source_df)
 
 if __name__ == "__main__":
     main()

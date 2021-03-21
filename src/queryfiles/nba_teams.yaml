@@ -1,119 +1,28 @@
 ---
 version: 1.0
 ---
-ignore:
-  # Twitter
-  - https
-  - t
-  - co
-  - amp
-  - Chili'
-  # NBA-related
-  - NBA
-  - Basketball
-  - game
-  - moneyline
-  - ML
-  - odds
-  - PM
-  - ET
-  - beat
-  - vs
-  - Atlanta
-  - Hawks
-  - ATL
-  - Boston
-  - Celtics
-  - BOS
-  - Brooklyn
-  - Nets
-  - BKN
-  - Charlotte
-  - Hornets
-  - CHA
-  - Chicago
-  - Bulls
-  - CHI
-  - Cleveland
-  - Cavaliers
-  - CLE
-  - Dallas
-  - Mavericks
-  - DAL
-  - Denver
-  - Nuggets
-  - DEN
-  - Detroit
-  - Pistons
-  - DET
-  - Golden State
-  - Warriors
-  - GSW
-  - Houston
-  - Rockets
-  - HOU
-  - Indiana
-  - Pacers
-  - IND
-  - Los Angeles
-  - Clippers
-  - LA
-  - LAC
-  - Los Angeles
-  - Lakers
-  - LAL
-  - LA
-  - Memphis
-  - Grizzlies
-  - MEM
-  - Miami
-  - Heat
-  - MIA
-  - Milwaukee
-  - Bucks
-  - MIL
-  - Minnesota
-  - Timberwolves
-  - MIN
-  - New Orleans
-  - Pelicans
-  - NOP
-  - New York
-  - Knicks
-  - NYK
-  - Oklahoma City
-  - Thunder
-  - OKC
-  - Orlando
-  - Magic
-  - ORL
-  - Philadelphia
-  - 76ers
-  - Sixers
-  - 6ers
-  - PHI
-  - Phoenix
-  - Suns
-  - PHX
-  - Portland
-  - Trailblazers
-  - Blazers
-  - POR
-  - Sacramento
-  - Kings
-  - SAC
-  - San Antonio
-  - Spurs
-  - SAS
-  - Toronto
-  - Raptors
-  - TOR
-  - Utah
-  - Jazz
-  - UTA
-  - Washington
-  - Wizards
-  - WAS
+general:
+  mode: ALL
+  query: >
+    SELECT * from posts_by_team
+
+stopwords:
+  - nltk:
+    type: local
+    location: stopwords/nltk_english.txt
+  - english:
+    type: local
+    location: stopwords/english.txt
+  - social_media:
+    type: local
+    location: stopwords/social_media.txt
+  - nba:
+    type: local
+    location: stopwords/nba.txt
+
+wordcloud:
+  max_words: 2000
+  random_state: 5
 ---
 type: Team
 name: Atlanta Hawks
@@ -228,6 +137,8 @@ name: New Orleans Pelicans
 mask:
   type: local
   location: img/NBA/NOP.png
+wordcloud:
+  max_words: 4000
 ---
 type: Team
 name: New York Knicks

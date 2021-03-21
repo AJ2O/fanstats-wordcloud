@@ -1,4 +1,5 @@
 matplotlib
+nltk
 pandas
 pillow
 wordcloud

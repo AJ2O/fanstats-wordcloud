@@ -1,14 +1,26 @@
 ---
 version: 1.0
 ---
-ignore:
-  - NBA
-  - Basketball
-  # Twitter
-  - https
-  - t
-  - co
-  - amp
+general:
+  mode: INDIVIDUAL
+
+stopwords:
+  - nltk:
+    type: local
+    location: stopwords/nltk_english.txt
+  - english:
+    type: local
+    location: stopwords/english.txt
+  - social_media:
+    type: local
+    location: stopwords/social_media.txt
+  - nba:
+    type: local
+    location: stopwords/nba.txt
+
+wordcloud:
+  max_words: 1000
+  random_state: 5
 ---
 type: League
 name: NBA
