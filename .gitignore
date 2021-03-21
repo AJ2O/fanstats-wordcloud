@@ -1,3 +1,8 @@
+# --- FanStats WordCloud
+src/complete_wordclouds/
+
+# --- PYTHON ---
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

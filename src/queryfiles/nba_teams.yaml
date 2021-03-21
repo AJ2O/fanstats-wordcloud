@@ -1,0 +1,296 @@
+---
+version: 1.0
+---
+ignore:
+  # Twitter
+  - https
+  - t
+  - co
+  - amp
+  - Chili'
+  # NBA-related
+  - NBA
+  - Basketball
+  - game
+  - moneyline
+  - ML
+  - odds
+  - PM
+  - ET
+  - beat
+  - vs
+  - Atlanta
+  - Hawks
+  - ATL
+  - Boston
+  - Celtics
+  - BOS
+  - Brooklyn
+  - Nets
+  - BKN
+  - Charlotte
+  - Hornets
+  - CHA
+  - Chicago
+  - Bulls
+  - CHI
+  - Cleveland
+  - Cavaliers
+  - CLE
+  - Dallas
+  - Mavericks
+  - DAL
+  - Denver
+  - Nuggets
+  - DEN
+  - Detroit
+  - Pistons
+  - DET
+  - Golden State
+  - Warriors
+  - GSW
+  - Houston
+  - Rockets
+  - HOU
+  - Indiana
+  - Pacers
+  - IND
+  - Los Angeles
+  - Clippers
+  - LA
+  - LAC
+  - Los Angeles
+  - Lakers
+  - LAL
+  - LA
+  - Memphis
+  - Grizzlies
+  - MEM
+  - Miami
+  - Heat
+  - MIA
+  - Milwaukee
+  - Bucks
+  - MIL
+  - Minnesota
+  - Timberwolves
+  - MIN
+  - New Orleans
+  - Pelicans
+  - NOP
+  - New York
+  - Knicks
+  - NYK
+  - Oklahoma City
+  - Thunder
+  - OKC
+  - Orlando
+  - Magic
+  - ORL
+  - Philadelphia
+  - 76ers
+  - Sixers
+  - 6ers
+  - PHI
+  - Phoenix
+  - Suns
+  - PHX
+  - Portland
+  - Trailblazers
+  - Blazers
+  - POR
+  - Sacramento
+  - Kings
+  - SAC
+  - San Antonio
+  - Spurs
+  - SAS
+  - Toronto
+  - Raptors
+  - TOR
+  - Utah
+  - Jazz
+  - UTA
+  - Washington
+  - Wizards
+  - WAS
+---
+type: Team
+name: Atlanta Hawks
+mask:
+  type: local
+  location: img/NBA/ATL.png
+---
+type: Team
+name: Boston Celtics
+mask:
+  type: local
+  location: img/NBA/BOS.png
+---
+type: Team
+name: Brooklyn Nets
+mask:
+  type: local
+  location: img/NBA/BKN.png
+---
+type: Team
+name: Charlotte Hornets
+mask:
+  type: local
+  location: img/NBA/CHA.png
+---
+type: Team
+name: Chicago Bulls
+mask:
+  type: local
+  location: img/NBA/CHI.png
+---
+type: Team
+name: Cleveland Cavaliers
+mask:
+  type: local
+  location: img/NBA/CLE.png
+---
+type: Team
+name: Dallas Mavericks
+mask:
+  type: local
+  location: img/NBA/DAL.png
+---
+type: Team
+name: Denver Nuggets
+mask:
+  type: local
+  location: img/NBA/DEN.png
+---
+type: Team
+name: Detroit Pistons
+mask:
+  type: local
+  location: img/NBA/DET.png
+---
+type: Team
+name: Golden State Warriors
+mask:
+  type: local
+  location: img/NBA/GSW.png
+---
+type: Team
+name: Houston Rockets
+mask:
+  type: local
+  location: img/NBA/HOU.png
+---
+type: Team
+name: Indiana Pacers
+mask:
+  type: local
+  location: img/NBA/IND.png
+---
+type: Team
+name: Los Angeles Clippers
+mask:
+  type: local
+  location: img/NBA/LAC.png
+---
+type: Team
+name: Los Angeles Lakers
+mask:
+  type: local
+  location: img/NBA/LAL.png
+---
+type: Team
+name: Memphis Grizzlies
+mask:
+  type: local
+  location: img/NBA/MEM.png
+---
+type: Team
+name: Miami Heat
+mask:
+  type: local
+  location: img/NBA/MIA.png
+---
+type: Team
+name: Milwaukee Bucks
+mask:
+  type: local
+  location: img/NBA/MIL.png
+---
+type: Team
+name: Minnesota Timberwolves
+mask:
+  type: local
+  location: img/NBA/MIN.png
+---
+type: Team
+name: New Orleans Pelicans
+mask:
+  type: local
+  location: img/NBA/NOP.png
+---
+type: Team
+name: New York Knicks
+mask:
+  type: local
+  location: img/NBA/NYK.png
+---
+type: Team
+name: Oklahoma City Thunder
+mask:
+  type: local
+  location: img/NBA/OKC.png
+---
+type: Team
+name: Orlando Magic
+mask:
+  type: local
+  location: img/NBA/ORL.png
+---
+type: Team
+name: Philadelphia 76ers
+mask:
+  type: local
+  location: img/NBA/PHI.png
+---
+type: Team
+name: Phoenix Suns
+mask:
+  type: local
+  location: img/NBA/PHX.png
+---
+type: Team
+name: Portland Trail Blazers
+mask:
+  type: local
+  location: img/NBA/POR.png
+---
+type: Team
+name: Sacramento Kings
+mask:
+  type: local
+  location: img/NBA/SAC.png
+---
+type: Team
+name: San Antonio Spurs
+mask:
+  type: local
+  location: img/NBA/SAS.png
+---
+type: Team
+name: Toronto Raptors
+mask: 
+  type: local
+  location: img/NBA/TOR.png
+---
+type: Team
+name: Utah Jazz
+mask:
+  type: local
+  location: img/NBA/UTA.png
+---
+type: Team
+name: Washington Wizards
+mask:
+  type: local
+  location: img/NBA/WAS.png

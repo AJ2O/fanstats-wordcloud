@@ -1,0 +1,17 @@
+---
+version: 1.0
+---
+ignore:
+  - NBA
+  - Basketball
+  # Twitter
+  - https
+  - t
+  - co
+  - amp
+---
+type: League
+name: NBA
+mask:
+  type: local
+  location: img/NBA-Logo.png
