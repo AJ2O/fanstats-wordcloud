@@ -1,5 +1,16 @@
 # FanStats WordCloud
-The FanStats WordCloud creates a diagram of commonly used words in the context of sports leagues, teams, and players. It uses [Athena](https://aws.amazon.com/athena/) to query the social media posts collected by the [FanStats Producers](https://github.com/AJ2O/fanstats-producer), and then uses the [WordCloud library for Python](https://amueller.github.io/word_cloud/) to create the diagrams. With a quick glance at a WordCloud, we can see the general social media sentiment towards a specific topic.
+![NBA](examples/NBA_2021-03-21.png)
+
+The FanStats WordCloud creates a diagram of commonly used words in the context of sports leagues, teams, and players. It uses Amazon Athena to query the social media posts collected by the [FanStats Producers](https://github.com/AJ2O/fanstats-producer), and then uses the WordCloud library for Python to create the pictures. With a quick glance at a WordCloud, we can see the general social media sentiment towards a specific topic.
+
+## Tools Used
+- [AWS SDK for Python (Athena)](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/athena.html)
+- [Natural Language Toolkit](https://www.nltk.org/)
+- [WordCloud for Python](https://amueller.github.io/word_cloud/index.html)
+- matplotlib
+- numpy
+- pandas
+- pillow
 
 ## Examples
 There are some example WordClouds in the [examples](examples) directory, and some of them are shown below for context.
