@@ -1,5 +1,6 @@
 # --- FanStats WordCloud
 src/complete_wordclouds*
+src/config.yaml
 
 # --- PYTHON ---
 
