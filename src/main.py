@@ -302,6 +302,7 @@ def export_wordcloud(wordcloud, output_file_path):
     wordcloud.to_file(full_output_path)
 
     # TODO: upload to S3
+    print("Exported wordcloud to " + output_file_path)
 
 
 # Main
@@ -327,6 +328,7 @@ def run_query_document_v1_0(
 
         if not df.empty:
             # generate WordCloud
+            print("Generating WordCloud...")
             wordcloud = generate_document_wordcloud(
                 document,
                 text_list=df.text,

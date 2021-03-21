@@ -2,4 +2,5 @@ matplotlib
 nltk
 pandas
 pillow
+scipy
 wordcloud

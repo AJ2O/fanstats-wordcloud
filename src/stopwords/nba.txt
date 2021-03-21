@@ -2,6 +2,7 @@ nba
 basketball
 league
 sport
+sports
 watch
 watching
 nbatopshotthis
