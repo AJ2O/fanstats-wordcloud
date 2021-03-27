@@ -12,6 +12,9 @@ The FanStats WordCloud creates a diagram of commonly used words in the context o
 - pandas
 - pillow
 
+## Architecture Diagram
+![Architecture](./Architecture.png)
+
 ## Examples
 There are some example WordClouds in the [examples](examples) directory, and some of them are shown below for context.
 
