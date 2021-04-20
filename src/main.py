@@ -2,6 +2,8 @@
 import os
 import re
 import yaml
+import urllib.request
+import shutil
 
 # Import statistics and machine learning libraries
 import numpy as np
@@ -127,10 +129,23 @@ def load_template_mask(mask_settings):
     Returns a file path to an image mask.
     '''
     mask_path = ''
-    if mask_settings['type'] == 'local':
+    mask_type = mask_settings['type']
+    
+    # the image is a stock image included with the project
+    if mask_type == 'local':
         return mask_settings['location']
+    
+    # the image can be downloaded over the Internet
+    elif mask_type == 'http':
+        url = mask_settings['location']
+        save_path = 'img/' + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.png'
+        with urllib.request.urlopen(url) as response, open(save_path, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
+        return save_path
+
+    # no other images supported
     else:
-        raise('Masks from ' + mask_settings['type'] + ' are unsupported')
+        raise('Masks from ' + mask_type + ' are unsupported')
 
 def load_template_stopwords(stopwords_settings):
     '''

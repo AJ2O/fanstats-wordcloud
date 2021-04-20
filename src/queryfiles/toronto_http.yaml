@@ -1,0 +1,31 @@
+---
+version: 1.0
+---
+general:
+  mode: ALL
+  query: >
+    SELECT * from posts_by_team
+
+stopwords:
+  - nltk:
+    type: local
+    location: stopwords/nltk_english.txt
+  - english:
+    type: local
+    location: stopwords/english.txt
+  - social_media:
+    type: local
+    location: stopwords/social_media.txt
+  - nba:
+    type: local
+    location: stopwords/nba.txt
+
+wordcloud:
+  max_words: 4000
+  random_state: 5
+---
+type: Team
+name: Toronto Raptors
+mask: 
+  type: http
+  location: https://3.bp.blogspot.com/-TZVYlX2OYrY/VCgY16ybDCI/AAAAAAAAFEI/cXOi_6nZ-i0/s1600/Logo%2BToronto%2BRaptors.png
